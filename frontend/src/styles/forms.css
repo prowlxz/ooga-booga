@@ -1,0 +1,112 @@
+/* ========================================
+   FORM STYLES
+======================================== */
+
+/* WORKOUT CREATION FORM */
+
+.workout-form-card {
+  background-color: var(--color-surface-raised);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-xl);
+  padding: 25px;
+  margin: 30px 0;
+}
+
+.workout-form-card h2 {
+  color: var(--color-accent);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.workout-form-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.workout-form-card input,
+.workout-form-card select {
+  width: 100%;
+}
+
+.workout-form-card > p {
+  color: #cccccc;
+}
+
+/* WORKOUT LIST SECTION */
+
+.workout-list-section {
+  margin-top: 35px;
+}
+
+.workout-list-section > h2 {
+  color: var(--color-accent);
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.workout-list-section > input {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.workout-list-section > select {
+  margin-right: 12px;
+  margin-bottom: 15px;
+  min-width: 180px;
+}
+
+/* FORM INPUTS */
+
+input:not([type="checkbox"]),
+select,
+textarea {
+  background-color: var(--color-surface-card);
+  color: var(--color-text);
+  border: 1px solid #444444;
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-accent);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #888888;
+}
+
+label {
+  color: #cccccc;
+}
+
+/* FORM ERROR MESSAGES */
+
+.form-error {
+  color: #dc2626;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+/* RESPONSIVE FORMS */
+
+@media (max-width: 600px) {
+  .workout-list-section > input {
+    width: 100%;
+  }
+
+  input:not([type="checkbox"]),
+  select,
+  textarea {
+    width: 100%;
+  }
+}

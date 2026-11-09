@@ -1,0 +1,58 @@
+/* ========================================
+   GLOBAL STYLES
+   Application-wide typography and elements
+======================================== */
+
+/* PAGE */
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+
+  background-color: var(--color-page-bg);
+
+  background-image:
+    repeating-radial-gradient(
+      ellipse at 12% 18%,
+      transparent 0 42px,
+      rgba(255, 255, 255, 0.16) 43px 45px,
+      transparent 46px 86px
+    ),
+    repeating-radial-gradient(
+      ellipse at 88% 78%,
+      transparent 0 50px,
+      rgba(70, 120, 130, 0.08) 51px 53px,
+      transparent 54px 100px
+    );
+
+  background-attachment: fixed;
+
+  color: var(--color-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* REACT ROOT */
+
+#root {
+  min-height: 100vh;
+}
+
+/* HEADINGS */
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* MAIN CONTENT */
+
+main {
+  width: 100%;
+}
+
+main h2 {
+  color: var(--color-text);
+}

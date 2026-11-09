@@ -23,5 +23,6 @@ export type Workout = {
   id: number;
   name: string;
   status: WorkoutStatus;
+  category: string;
   exercises: Exercise[];
 };

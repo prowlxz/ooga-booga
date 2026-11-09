@@ -1,14 +1,13 @@
-
 // LESSON: COMPONENT PROPS AND FORM HANDLING
 
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from "react";
 
 // Describes the information needed to add an exercise.
 type AddExerciseHandler = (
   name: string,
   sets: number,
   reps: number,
-  notes: string
+  notes: string,
 ) => void;
 
 // Describes the props accepted by ExerciseForm.
@@ -17,30 +16,29 @@ type ExerciseFormProps = {
 };
 
 function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
-
   // Store the exercise information.
-  const [exerciseName, setExerciseName] = useState('');
+  const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(12);
-  const [notes, setNotes] = useState('');
+  const [notes, setNotes] = useState("");
 
   // Store validation error messages.
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   function validateExercise(cleanedName: string): string {
     if (!cleanedName) {
-      return 'Please enter an exercise name.';
+      return "Please enter an exercise name.";
     }
 
     if (!Number.isInteger(sets) || sets < 1) {
-      return 'Sets must be a whole number greater than 0.';
+      return "Sets must be a whole number greater than 0.";
     }
 
     if (!Number.isInteger(reps) || reps < 1) {
-      return 'Repetitions must be a whole number greater than 0.';
+      return "Repetitions must be a whole number greater than 0.";
     }
 
-    return '';
+    return "";
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -58,26 +56,36 @@ function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
     }
 
     // Clear any previous validation error.
-    setError('');
+    setError("");
 
     // Send exercise information to the parent component.
-    onAddExercise(cleanedName, sets, reps, notes.trim());
+    try {
+      onAddExercise(cleanedName, sets, reps, notes.trim());
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
+      return;
+    }
 
-    // Reset the form after saving.
-    setExerciseName('');
+    // Reset the form after successful saving.
+    setExerciseName("");
     setSets(3);
     setReps(12);
-    setNotes('');
+    setNotes("");
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="form-error">{error}</p>}
 
       <h4>New Exercise</h4>
 
       <input
         type="text"
+        maxLength={50}
         placeholder="Exercise name"
         value={exerciseName}
         onChange={(event) => {
@@ -85,7 +93,7 @@ function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
 
           // Clear the error when the user starts correcting the input.
           if (error) {
-            setError('');
+            setError("");
           }
         }}
         required
@@ -119,9 +127,7 @@ function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
         onChange={(event) => setNotes(event.target.value)}
       />
 
-      <button type="submit">
-        Save Exercise
-      </button>
+      <button type="submit">Save Exercise</button>
     </form>
   );
 }

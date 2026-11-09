@@ -1,0 +1,184 @@
+/* ========================================
+   RESPONSIVE STYLES
+   Application-wide responsive adjustments
+======================================== */
+
+/* ========================================
+   TABLETS AND SMALL LAPTOPS
+   Maximum width: 900px
+======================================== */
+
+@media (max-width: 900px) {
+  /* APPLICATION LAYOUT */
+
+  .app-layout {
+    gap: 18px;
+  }
+
+  /* SIDEBAR */
+
+  .sidebar {
+    flex-basis: 165px;
+  }
+
+  .sidebar-link {
+    gap: 9px;
+    font-size: 13px;
+  }
+
+  /* HEADER */
+
+  .app-header {
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+  }
+
+  .header-search {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    max-width: 100%;
+  }
+}
+
+/* ========================================
+   MOBILE DEVICES
+   Maximum width: 600px
+======================================== */
+
+@media (max-width: 600px) {
+  /* ROOT CONTAINER */
+
+  #root {
+    padding: 10px;
+  }
+
+  #root > div {
+    padding: 18px;
+    border-radius: var(--radius-xl);
+  }
+
+  /* APPLICATION LAYOUT */
+
+  .app-layout {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* SIDEBAR */
+
+  .sidebar {
+    flex: none;
+    min-height: auto;
+    padding-bottom: 15px;
+
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .sidebar-brand {
+    padding-bottom: 15px;
+  }
+
+  .sidebar-navigation {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .sidebar-link {
+    min-height: 38px;
+    padding: 8px;
+  }
+
+  .sidebar-bottom {
+    flex-direction: row;
+    margin-top: 15px;
+    padding-top: 12px;
+  }
+
+  /* DASHBOARD HEADING */
+
+  .dashboard-heading-content {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-heading-content h2 {
+    font-size: 24px;
+  }
+
+  /* DASHBOARD STATISTICS */
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-card {
+    padding: 12px;
+  }
+
+  .stat-card p {
+    font-size: 24px;
+  }
+
+  /* FORMS */
+
+  .workout-list-section > input {
+    width: 100%;
+  }
+
+  input:not([type="checkbox"]),
+  select,
+  textarea {
+    width: 100%;
+  }
+
+  /* WORKOUT BOARD */
+
+  .workout-board-column {
+    flex-basis: 270px;
+    width: 270px;
+    min-width: 270px;
+  }
+
+  /* EXERCISE ACTIONS */
+
+  .exercise-actions button {
+    flex: 1 1 auto;
+  }
+}
+
+/* ========================================
+   SMALL MOBILE DEVICES
+   Maximum width: 480px
+======================================== */
+
+@media (max-width: 480px) {
+  /* HEADER */
+
+  .app-header {
+    gap: 12px;
+  }
+
+  .app-header .brand-logo {
+    font-size: 19px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  .header-user {
+    display: none;
+  }
+
+  /* EXERCISE DETAILS */
+
+  .workout-card .exercise-checkbox-label {
+    gap: 8px;
+  }
+
+  .workout-card .exercise-details {
+    padding-left: 0;
+  }
+}

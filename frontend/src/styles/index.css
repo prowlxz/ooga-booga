@@ -1,0 +1,41 @@
+/* ========================================
+   MONKEY LIFT - CSS ENTRY POINT
+
+   All application styles are imported here.
+======================================== */
+
+/* 1. Design tokens */
+@import "./variables.css";
+
+/* 2. Browser reset */
+@import "./reset.css";
+
+/* 3. Global styles */
+@import "./global.css";
+
+/* 4. Application layout */
+@import "./layout.css";
+
+/* 5. Navigation */
+@import "./navigation.css";
+
+/* 6. Dashboard */
+@import "./dashboard.css";
+
+/* 7. Forms */
+@import "./forms.css";
+
+/* 8. Buttons */
+@import "./buttons.css";
+
+/* 9. Workout board */
+@import "./workout-board.css";
+
+/* 10. Workout cards */
+@import "./workout-card.css";
+
+/* 11. Exercise lists */
+@import "./exercise-list.css";
+
+/* 12. Responsive styles */
+@import "./responsive.css";
