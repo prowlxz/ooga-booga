@@ -9,6 +9,7 @@ export type Exercise = {
   sets: number;
   reps: number;
   notes?: string;
+  completed: boolean;
 };
 
 // This must be outside the Exercise type.

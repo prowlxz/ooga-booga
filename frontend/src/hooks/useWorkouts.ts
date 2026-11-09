@@ -6,6 +6,7 @@ import type {
   Workout,
   Exercise,
   ExerciseUpdate,
+  WorkoutStatus,
 } from "../types/workout";
 
 // This hook manages all workout-related operations.
@@ -49,13 +50,17 @@ export function useWorkouts() {
   }
 
   // FUNCTION: Add an exercise to a specific workout.
-  function addExercise(workoutId: number, exerciseData: Omit<Exercise, "id">) {
+  function addExercise(
+  workoutId: number,
+  exerciseData: Omit<Exercise, "id" | "completed">
+) {
  
 
-    const newExercise: Exercise = {
-      id: Date.now(),
-      ...exerciseData,
-    };
+    const newExercise = {
+  id: Date.now() + Math.random(),
+  ...exerciseData,
+  completed: false,
+};
 
     setWorkouts((currentWorkouts) =>
       currentWorkouts.map((workout) =>
@@ -89,6 +94,21 @@ export function useWorkouts() {
       )
     );
   }
+  // FUNCTION: Delete an exercise from a workout.
+function deleteExercise(workoutId: number, exerciseId: number) {
+  setWorkouts((currentWorkouts) =>
+    currentWorkouts.map((workout) =>
+      workout.id === workoutId
+        ? {
+            ...workout,
+            exercises: workout.exercises.filter(
+              (exercise) => exercise.id !== exerciseId
+            ),
+          }
+        : workout
+    )
+  );
+}
   // FUNCTION: Change the name of an existing workout.
   function updateWorkout(workoutId: number, newName: string) {
     setWorkouts((currentWorkouts) =>
@@ -98,6 +118,20 @@ export function useWorkouts() {
     );
   }
 
+// FUNCTION: Change the status of an existing workout.
+function updateWorkoutStatus(
+  workoutId: number,
+  status: WorkoutStatus
+) {
+  setWorkouts((currentWorkouts) =>
+    currentWorkouts.map((workout) =>
+      workout.id === workoutId
+        ? { ...workout, status }
+        : workout
+    )
+  );
+}
+
   // FUNCTION: Delete a workout.
   function deleteWorkout(workoutId: number) {
     setWorkouts((currentWorkouts) =>
@@ -106,12 +140,14 @@ export function useWorkouts() {
   }
 
   // Return the data and functions so other components can use them.
-    return {
-    workouts,
-    createWorkout,
-    addExercise,
-    updateExercise,
-    updateWorkout,
-    deleteWorkout,
-  };
+   return {
+  workouts,
+  createWorkout,
+  addExercise,
+  updateExercise,
+  deleteExercise,
+  updateWorkout,
+  updateWorkoutStatus,
+  deleteWorkout,
+};
 }
