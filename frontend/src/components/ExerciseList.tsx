@@ -1,5 +1,5 @@
 // LESSON: RENDERING ARRAYS WITH MAP()
-// This component displays and manages exercises.
+// This component displays, edits, and manages exercises.
 
 import { useState } from "react";
 import type { Exercise } from "../types/workout";
@@ -23,11 +23,14 @@ function ExerciseList({
     null,
   );
 
-  // Stores the temporary exercise information.
+  // Stores temporary exercise information.
   const [editName, setEditName] = useState("");
   const [editSets, setEditSets] = useState(1);
   const [editReps, setEditReps] = useState(1);
   const [editNotes, setEditNotes] = useState("");
+
+  // Stores validation error messages.
+  const [editError, setEditError] = useState("");
 
   // Start editing an exercise.
   function handleEdit(exercise: Exercise) {
@@ -36,6 +39,7 @@ function ExerciseList({
     setEditSets(exercise.sets);
     setEditReps(exercise.reps);
     setEditNotes(exercise.notes ?? "");
+    setEditError("");
   }
 
   // Save the edited exercise.
@@ -43,14 +47,23 @@ function ExerciseList({
     const trimmedName = editName.trim();
 
     // Validate the exercise information.
-    if (
-      trimmedName === "" ||
-      !Number.isInteger(editSets) ||
-      !Number.isInteger(editReps) ||
-      editSets < 1 ||
-      editReps < 1
-    ) {
-      alert("Please enter a valid name, sets, and reps.");
+    if (!trimmedName) {
+      setEditError("Please enter an exercise name.");
+      return;
+    }
+
+    if (trimmedName.length > 50) {
+      setEditError("Exercise names cannot exceed 50 characters.");
+      return;
+    }
+
+    if (!Number.isInteger(editSets) || editSets < 1) {
+      setEditError("Sets must be a whole number greater than 0.");
+      return;
+    }
+
+    if (!Number.isInteger(editReps) || editReps < 1) {
+      setEditError("Repetitions must be a whole number greater than 0.");
       return;
     }
 
@@ -58,11 +71,11 @@ function ExerciseList({
     const duplicateName = exercises.some(
       (exercise) =>
         exercise.id !== exerciseId &&
-        exercise.name.toLowerCase() === trimmedName.toLowerCase(),
+        exercise.name.trim().toLowerCase() === trimmedName.toLowerCase(),
     );
 
     if (duplicateName) {
-      alert("Another exercise already uses this name!");
+      setEditError("Another exercise already uses this name.");
       return;
     }
 
@@ -74,7 +87,8 @@ function ExerciseList({
       notes: editNotes.trim(),
     });
 
-    setEditingExerciseId(null);
+    // Close the edit form after successful saving.
+    handleCancel();
   }
 
   // Cancel editing without saving changes.
@@ -84,6 +98,7 @@ function ExerciseList({
     setEditSets(1);
     setEditReps(1);
     setEditNotes("");
+    setEditError("");
   }
 
   return (
@@ -106,28 +121,47 @@ function ExerciseList({
               {editingExerciseId === exercise.id ? (
                 // EDIT EXERCISE FORM
                 <div className="exercise-edit-form">
+                  {editError && (
+                    <p className="form-error" role="alert">
+                      {editError}
+                    </p>
+                  )}
+
                   <input
                     type="text"
+                    maxLength={50}
+                    placeholder="Exercise name"
                     value={editName}
-                    onChange={(event) => setEditName(event.target.value)}
+                    onChange={(event) => {
+                      setEditName(event.target.value);
+                      setEditError("");
+                    }}
                   />
+
+                  <label>Sets:</label>
 
                   <input
                     type="number"
                     min="1"
+                    step="1"
                     value={editSets}
-                    onChange={(event) =>
-                      setEditSets(Number(event.target.value))
-                    }
+                    onChange={(event) => {
+                      setEditSets(Number(event.target.value));
+                      setEditError("");
+                    }}
                   />
+
+                  <label>Repetitions:</label>
 
                   <input
                     type="number"
                     min="1"
+                    step="1"
                     value={editReps}
-                    onChange={(event) =>
-                      setEditReps(Number(event.target.value))
-                    }
+                    onChange={(event) => {
+                      setEditReps(Number(event.target.value));
+                      setEditError("");
+                    }}
                   />
 
                   <label>Exercise Notes:</label>
@@ -191,11 +225,11 @@ function ExerciseList({
 
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={() =>
                         onUpdateExercise(exercise.id, {
                           sets: exercise.sets + 1,
-                        });
-                      }}
+                        })
+                      }
                     >
                       Add 1 Set
                     </button>

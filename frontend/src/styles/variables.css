@@ -1,36 +1,62 @@
 /* ========================================
-   DESIGN TOKENS
+   MONKEY LIFT - DESIGN TOKENS
    Reusable colors, spacing, and values
 ======================================== */
 
 :root {
-  /* Colors */
+  /* ========================================
+     COLORS
+  ======================================== */
+
+  /* Page Background */
   --color-page-bg: #b5d9e1;
 
+  /* Surface Colors */
   --color-surface: #101010;
   --color-surface-raised: #202020;
   --color-surface-card: #292929;
 
+  /* Border Colors */
   --color-border: #303030;
   --color-border-strong: #353535;
   --color-border-subtle: #383838;
 
+  /* Text Colors */
   --color-text: #ffffff;
   --color-text-muted: #aaaaaa;
   --color-text-subtle: #999999;
 
+  /* Accent Color */
   --color-accent: #efff38;
 
+  /* Status Colors */
   --color-danger: #ff7777;
   --color-success: #4ade80;
 
-  /* Border Radius */
+  /* ========================================
+     SPACING
+  ======================================== */
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* ========================================
+     BORDER RADIUS
+  ======================================== */
+
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 14px;
   --radius-xl: 16px;
   --radius-shell: 28px;
 
-  /* Transitions */
+  /* ========================================
+     TRANSITIONS
+  ======================================== */
+
   --transition-fast: 0.2s ease;
+  --transition-medium: 0.3s ease;
 }

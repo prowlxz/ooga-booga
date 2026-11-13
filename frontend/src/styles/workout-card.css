@@ -410,3 +410,61 @@
   border-style: solid;
   transform: translateY(-1px);
 }
+
+/* ========================================
+   MOBILE WORKOUT CARD ADJUSTMENTS
+======================================== */
+
+@media (max-width: 600px) {
+
+  /* CARD SPACING */
+
+  .workout-card {
+    padding: 16px;
+    margin: 12px 0;
+  }
+
+  /* WORKOUT TITLE */
+
+  .workout-card h3 {
+    font-size: 18px;
+    overflow-wrap: anywhere;
+  }
+
+  /* WORKOUT CONTROLS */
+
+  .workout-board-column .workout-controls {
+    gap: 12px;
+  }
+
+  .workout-board-column .workout-status-label {
+    flex-wrap: wrap;
+  }
+
+  .workout-board-column .workout-status-label select {
+    width: 100%;
+  }
+
+  /* WORKOUT ACTIONS */
+
+  .workout-board-column .workout-actions {
+    gap: 8px;
+  }
+
+  .workout-board-column .workout-actions button {
+    flex: 1 1 auto;
+    min-height: 36px;
+  }
+
+  /* WORKOUT PROGRESS */
+
+  .workout-board-column .workout-progress-heading {
+    flex-wrap: wrap;
+  }
+
+  /* DROPDOWN MENU */
+
+  .workout-board-column .workout-dropdown-menu {
+    max-width: calc(100vw - 60px);
+  }
+}

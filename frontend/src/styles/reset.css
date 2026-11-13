@@ -1,6 +1,10 @@
 /* ========================================
-   CSS RESET
+   MONKEY LIFT - CSS RESET
    Removes inconsistent browser defaults
+======================================== */
+
+/* ========================================
+   BOX SIZING
 ======================================== */
 
 *,
@@ -8,6 +12,10 @@
 *::after {
   box-sizing: border-box;
 }
+
+/* ========================================
+   DOCUMENT DEFAULTS
+======================================== */
 
 html {
   scroll-behavior: smooth;
@@ -18,6 +26,10 @@ body {
   padding: 0;
 }
 
+/* ========================================
+   FORM ELEMENT DEFAULTS
+======================================== */
+
 button,
 input,
 select,
@@ -25,11 +37,37 @@ textarea {
   font: inherit;
 }
 
+/* ========================================
+   BUTTON DEFAULTS
+======================================== */
+
 button {
   cursor: pointer;
 }
 
-img {
-  max-width: 100%;
+/* ========================================
+   MEDIA ELEMENTS
+======================================== */
+
+img,
+picture,
+video,
+canvas,
+svg {
   display: block;
+  max-width: 100%;
+}
+
+/* ========================================
+   TEXT WRAPPING
+======================================== */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  overflow-wrap: break-word;
 }

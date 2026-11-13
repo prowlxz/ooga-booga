@@ -1,15 +1,21 @@
 /* ========================================
    RESPONSIVE STYLES
-   Application-wide responsive adjustments
 ======================================== */
 
 /* ========================================
    TABLETS AND SMALL LAPTOPS
-   Maximum width: 900px
 ======================================== */
 
 @media (max-width: 900px) {
-  /* APPLICATION LAYOUT */
+  /* MAIN LAYOUT */
+
+  #root {
+    padding: 24px;
+  }
+
+  .app-shell {
+    padding: 24px;
+  }
 
   .app-layout {
     gap: 18px;
@@ -29,46 +35,62 @@
   /* HEADER */
 
   .app-header {
-    grid-template-columns: 1fr auto;
     gap: 15px;
   }
 
   .header-search {
-    grid-column: 1 / -1;
-    grid-row: 2;
-    max-width: 100%;
+    flex: 1;
+    min-width: 0;
+    max-width: none;
   }
 }
 
 /* ========================================
    MOBILE DEVICES
-   Maximum width: 600px
 ======================================== */
 
 @media (max-width: 600px) {
-  /* ROOT CONTAINER */
+  /* MAIN LAYOUT */
 
   #root {
     padding: 10px;
   }
 
-  #root > div {
-    padding: 18px;
+  .app-shell {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: calc(100vh - 20px);
+    padding: 16px;
     border-radius: var(--radius-xl);
   }
 
-  /* APPLICATION LAYOUT */
-
   .app-layout {
+    display: flex;
     flex-direction: column;
-    gap: 15px;
+    align-items: stretch;
+    gap: 20px;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-content {
+    width: 100%;
+    min-width: 0;
   }
 
   /* SIDEBAR */
 
   .sidebar {
+    display: flex;
     flex: none;
+    flex-direction: column;
+
+    width: 100%;
+    min-width: 0;
     min-height: auto;
+
     padding-bottom: 15px;
 
     border-right: none;
@@ -76,31 +98,97 @@
   }
 
   .sidebar-brand {
-    padding-bottom: 15px;
+    padding: 10px 8px 15px;
   }
 
   .sidebar-navigation {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 5px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
+    width: 100%;
   }
 
   .sidebar-link {
-    min-height: 38px;
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+
     padding: 8px;
+    gap: 8px;
+
+    font-size: 13px;
+  }
+
+  .sidebar-link span {
+    flex-shrink: 0;
   }
 
   .sidebar-bottom {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+
     margin-top: 15px;
     padding-top: 12px;
+  }
+
+  /* HEADER */
+
+  .app-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 15px;
+
+    width: 100%;
+    min-width: 0;
+  }
+
+  .header-search {
+    position: relative;
+    order: 1;
+
+    display: flex;
+
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .header-search input {
+    width: 100%;
+    min-width: 0;
+    padding-left: 38px;
+  }
+
+  .header-actions {
+    order: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    width: 100%;
+    margin: 0;
+    gap: 12px;
+  }
+
+  .header-user {
+    display: none;
   }
 
   /* DASHBOARD HEADING */
 
   .dashboard-heading-content {
-    align-items: flex-start;
+    display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 
   .dashboard-heading-content h2 {
@@ -110,10 +198,11 @@
   /* DASHBOARD STATISTICS */
 
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .stat-card {
+    min-width: 0;
     padding: 12px;
   }
 
@@ -121,24 +210,47 @@
     font-size: 24px;
   }
 
-  /* FORMS */
+  /* WORKOUT TOOLBAR */
 
-  .workout-list-section > input {
+  .workout-toolbar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .workout-toolbar-search,
+  .workout-toolbar-selects,
+  .workout-toolbar-filters {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .workout-toolbar-selects {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .workout-toolbar-selects select {
     width: 100%;
   }
+
+  .workout-toolbar-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .workout-toolbar-filters button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* FORM ELEMENTS */
 
   input:not([type="checkbox"]),
   select,
   textarea {
-    width: 100%;
-  }
-
-  /* WORKOUT BOARD */
-
-  .workout-board-column {
-    flex-basis: 270px;
-    width: 270px;
-    min-width: 270px;
+    max-width: 100%;
   }
 
   /* EXERCISE ACTIONS */
@@ -146,33 +258,6 @@
   .exercise-actions button {
     flex: 1 1 auto;
   }
-}
-
-/* ========================================
-   SMALL MOBILE DEVICES
-   Maximum width: 480px
-======================================== */
-
-@media (max-width: 480px) {
-  /* HEADER */
-
-  .app-header {
-    gap: 12px;
-  }
-
-  .app-header .brand-logo {
-    font-size: 19px;
-  }
-
-  .header-actions {
-    gap: 8px;
-  }
-
-  .header-user {
-    display: none;
-  }
-
-  /* EXERCISE DETAILS */
 
   .workout-card .exercise-checkbox-label {
     gap: 8px;
@@ -180,5 +265,45 @@
 
   .workout-card .exercise-details {
     padding-left: 0;
+  }
+
+  /* WORKOUT BOARD */
+
+  .workout-board {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ========================================
+   SMALL MOBILE DEVICES
+======================================== */
+
+@media (max-width: 480px) {
+  /* MAIN LAYOUT */
+
+  .app-shell {
+    padding: 12px;
+  }
+
+  /* HEADER */
+
+  .app-header {
+    gap: 12px;
+  }
+
+  .header-actions {
+    gap: 8px;
+  }
+
+  /* DASHBOARD HEADING */
+
+  .dashboard-heading-content h2 {
+    font-size: 21px;
   }
 }

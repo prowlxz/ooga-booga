@@ -1,8 +1,10 @@
 /* ========================================
-   BUTTON STYLES
+   MONKEY LIFT - BUTTON STYLES
 ======================================== */
 
-/* BASE BUTTON */
+/* ========================================
+   BASE BUTTON
+======================================== */
 
 button {
   display: inline-flex;
@@ -33,59 +35,83 @@ button {
     transform 0.1s ease;
 }
 
-/* BUTTON HOVER */
+/* ========================================
+   BUTTON HOVER
+======================================== */
 
-button:hover {
+button:hover:not(:disabled) {
   background-color: #d9e92e;
 }
 
-/* BUTTON ACTIVE */
+/* ========================================
+   BUTTON ACTIVE
+======================================== */
 
-button:active {
+button:active:not(:disabled) {
   transform: scale(0.97);
 }
 
-/* DISABLED BUTTON */
+/* ========================================
+   BUTTON FOCUS
+======================================== */
+
+button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* ========================================
+   DISABLED BUTTON
+======================================== */
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* DELETE BUTTON */
+/* ========================================
+   DELETE BUTTON
+======================================== */
 
 button.delete-button {
   background-color: #8f2929;
   color: var(--color-text);
 }
 
-button.delete-button:hover {
+button.delete-button:hover:not(:disabled) {
   background-color: #b83232;
 }
 
-/* SUCCESS BUTTON */
+/* ========================================
+   SUCCESS BUTTON
+======================================== */
 
 button.success-button {
   background-color: #2e7d4b;
   color: var(--color-text);
 }
 
-button.success-button:hover {
+button.success-button:hover:not(:disabled) {
   background-color: #39965b;
 }
 
-/* CANCEL BUTTON */
+/* ========================================
+   CANCEL BUTTON
+======================================== */
 
 button.cancel-button {
   background-color: #444444;
   color: var(--color-text);
 }
 
-button.cancel-button:hover {
+button.cancel-button:hover:not(:disabled) {
   background-color: #5a5a5a;
 }
 
-/* WORKOUT FILTER BUTTONS */
+/* ========================================
+   WORKOUT FILTER BUTTONS
+======================================== */
 
 .filter-button {
   display: inline-flex;
@@ -93,6 +119,7 @@ button.cancel-button:hover {
   justify-content: center;
 
   min-height: 36px;
+
   margin: 0 6px 8px 0;
   padding: 9px 17px;
 
@@ -105,19 +132,29 @@ button.cancel-button:hover {
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
+
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
-/* FILTER BUTTON HOVER */
+/* ========================================
+   FILTER BUTTON HOVER
+======================================== */
 
-.filter-button:hover {
+.filter-button:hover:not(:disabled) {
   background-color: #444444;
   color: var(--color-text);
 }
 
-/* ACTIVE FILTER BUTTON */
+/* ========================================
+   ACTIVE FILTER BUTTON
+======================================== */
 
 .filter-button.active {
   background-color: var(--color-accent);
   color: var(--color-surface);
+
   border-color: var(--color-accent);
 }

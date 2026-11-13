@@ -1,20 +1,50 @@
 /* ========================================
-   APPLICATION LAYOUT
+   MONKEY LIFT - APPLICATION LAYOUT
 ======================================== */
 
-/* ROOT CONTAINER */
+/* ========================================
+   ROOT CONTAINER
+======================================== */
 
 #root {
+  box-sizing: border-box;
+
   width: 100%;
   min-height: 100vh;
   padding: 40px;
 
-  background: transparent;
+  background-color: #b5d9e1;
+
+  /* Subtle oversized curved background patterns */
+
+  background-image:
+    repeating-radial-gradient(
+      ellipse at 10% 20%,
+      transparent 0,
+      transparent 100px,
+      rgba(255, 255, 255, 0.16) 102px,
+      rgba(255, 255, 255, 0.16) 106px,
+      transparent 108px,
+      transparent 150px
+    ),
+    repeating-radial-gradient(
+      ellipse at 90% 80%,
+      transparent 0,
+      transparent 120px,
+      rgba(35, 100, 115, 0.08) 122px,
+      rgba(35, 100, 115, 0.08) 126px,
+      transparent 128px,
+      transparent 175px
+    );
 }
 
-/* MAIN DASHBOARD SHELL */
+/* ========================================
+   MAIN DASHBOARD SHELL
+======================================== */
 
-#root > div {
+.app-shell {
+  box-sizing: border-box;
+
   width: 100%;
   max-width: 1400px;
   min-height: 85vh;
@@ -29,7 +59,9 @@
   color: var(--color-text);
 }
 
-/* MAIN APPLICATION CONTAINER */
+/* ========================================
+   MAIN APPLICATION CONTAINER
+======================================== */
 
 .app-layout {
   display: flex;
@@ -37,48 +69,15 @@
   gap: 30px;
 
   width: 100%;
+  min-width: 0;
   min-height: 85vh;
 }
 
-/* MAIN CONTENT AREA */
+/* ========================================
+   MAIN CONTENT AREA
+======================================== */
 
 .app-content {
   flex: 1;
   min-width: 0;
-}
-
-/* RESPONSIVE LAYOUT */
-
-@media (max-width: 900px) {
-  #root {
-    padding: 24px;
-  }
-
-  #root > div {
-    padding: 24px;
-  }
-
-  .app-layout {
-    gap: 20px;
-  }
-}
-
-/* MOBILE LAYOUT */
-
-@media (max-width: 600px) {
-  #root {
-    padding: 10px;
-  }
-
-  #root > div {
-    min-height: calc(100vh - 20px);
-    padding: 18px;
-
-    border-radius: var(--radius-xl);
-  }
-
-  .app-layout {
-    flex-direction: column;
-    gap: 15px;
-  }
 }

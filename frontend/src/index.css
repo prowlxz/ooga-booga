@@ -1,11 +1,8 @@
 
-* {
-  box-sizing: border-box;
-}
+/*
+  Global application styles are imported through:
+  ./styles/index.css in App.tsx
 
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  color: #111827;
-  background: #f9fafb;
-}
+  This file is intentionally kept empty to avoid
+  duplicating global styles.
+*/

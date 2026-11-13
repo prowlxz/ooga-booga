@@ -1,8 +1,10 @@
 /* ========================================
-   WORKOUT BOARD STYLES
+   MONKEY LIFT - WORKOUT BOARD STYLES
 ======================================== */
 
-/* HORIZONTAL WORKOUT BOARD */
+/* ========================================
+   HORIZONTAL WORKOUT BOARD
+======================================== */
 
 .workout-board {
   display: flex;
@@ -10,13 +12,24 @@
   gap: 24px;
 
   width: 100%;
-  overflow-x: auto;
+  min-width: 0;
 
   padding: 15px 5px 25px;
+
   box-sizing: border-box;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+
+  -webkit-overflow-scrolling: touch;
 }
 
-/* INDIVIDUAL WORKOUT COLUMNS */
+/* ========================================
+   INDIVIDUAL WORKOUT COLUMNS
+======================================== */
 
 .workout-board-column {
   display: flex;
@@ -24,12 +37,15 @@
   gap: 16px;
 
   flex: 1 0 290px;
+
   width: auto;
   min-width: 290px;
   min-height: 320px;
 
   margin: 0;
   padding: 26px 22px;
+
+  box-sizing: border-box;
 
   background: linear-gradient(145deg, #242424 0%, #1d1d1d 100%);
 
@@ -38,30 +54,35 @@
 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
-  box-sizing: border-box;
   overflow: visible;
 
   transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    background 0.25s ease;
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
-/* COLUMN HOVER EFFECT */
+/* ========================================
+   COLUMN HOVER EFFECT
+======================================== */
 
 .workout-board-column:hover {
   border-color: #484848;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-/* ACTIVE WORKOUT COLUMN */
+/* ========================================
+   ACTIVE WORKOUT COLUMN
+======================================== */
 
 .workout-board-column.active {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 1px var(--color-accent);
 }
 
-/* COLUMN HEADER */
+/* ========================================
+   COLUMN HEADER
+======================================== */
 
 .workout-board-column .workout-card-header {
   display: flex;
@@ -69,14 +90,18 @@
   justify-content: space-between;
   gap: 12px;
 
+  min-width: 0;
   min-height: 55px;
+
   margin: 0;
   padding-bottom: 14px;
 
   border-bottom: 1px solid var(--color-border-subtle);
 }
 
-/* WORKOUT HEADER ACTIONS */
+/* ========================================
+   WORKOUT HEADER ACTIONS
+======================================== */
 
 .workout-board-column .workout-header-actions {
   position: relative;
@@ -89,17 +114,20 @@
   flex-shrink: 0;
 }
 
-/* COLUMN TITLE */
+/* ========================================
+   COLUMN TITLE
+======================================== */
 
 .workout-board-column .workout-title-section {
-  min-width: 0;
   flex: 1;
+  min-width: 0;
 }
 
 .workout-board-column .workout-title-section h3 {
   margin: 0;
 
   color: var(--color-text);
+
   font-size: 17px;
   font-weight: 800;
   line-height: 1.4;
@@ -109,35 +137,42 @@
   hyphens: auto;
 }
 
-/* COLUMN CATEGORY */
+/* ========================================
+   COLUMN CATEGORY
+======================================== */
 
 .workout-board-column .workout-category {
   margin: 6px 0 0;
 
   color: var(--color-text-subtle);
+
   font-size: 11px;
   font-weight: 600;
+  line-height: 1.4;
 
   text-transform: uppercase;
   letter-spacing: 0.8px;
-
-  line-height: 1.4;
 }
 
-/* STATUS BADGE */
+/* ========================================
+   STATUS BADGE
+======================================== */
 
 .workout-board-column .status-badge {
   flex-shrink: 0;
 
-  padding: 5px 8px;
   margin: 0;
+  padding: 5px 8px;
 
   border-radius: 20px;
+
   font-size: 10px;
   white-space: nowrap;
 }
 
-/* COLUMN SCROLLBAR */
+/* ========================================
+   CUSTOM SCROLLBAR
+======================================== */
 
 .workout-board::-webkit-scrollbar {
   height: 8px;
@@ -155,21 +190,4 @@
 
 .workout-board::-webkit-scrollbar-thumb:hover {
   background: var(--color-accent);
-}
-
-/* RESPONSIVE WORKOUT COLUMNS */
-
-@media (max-width: 600px) {
-  .workout-board {
-    gap: 14px;
-    padding: 12px 3px 20px;
-  }
-
-  .workout-board-column {
-    flex-basis: min(270px, 85vw);
-    width: min(270px, 85vw);
-    min-width: min(270px, 85vw);
-
-    padding: 18px;
-  }
 }
