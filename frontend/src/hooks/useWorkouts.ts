@@ -1,7 +1,8 @@
-// LESSON: CUSTOM REACT HOOKS
-// useState allows us to store and update workout data.
+// LESSON: CUSTOM REACT HOOKS AND API INTEGRATION
+// This hook manages workout data using the FastAPI backend.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
 import type {
   Workout,
   Exercise,
@@ -9,183 +10,206 @@ import type {
   WorkoutStatus,
 } from "../types/workout";
 
+import { apiRequest } from "../services/api";
+
 // This hook manages all workout-related operations.
 export function useWorkouts() {
-  // STATE: Stores every workout in our application.
-  // Load previously saved workouts from the browser.
-  // The function runs when the hook initializes.
-  const [workouts, setWorkouts] = useState<Workout[]>(() => {
-    const savedWorkouts = localStorage.getItem("workouts");
+  // Store workouts retrieved from the backend.
+  const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-    if (savedWorkouts) {
-      try {
-        const parsedWorkouts = JSON.parse(savedWorkouts) as Workout[];
+  // Track the initial loading state.
+  const [isLoading, setIsLoading] = useState(true);
 
-        return parsedWorkouts.map((workout) => ({
-          ...workout,
-          category: workout.category ?? "Strength",
-        }));
-      } catch (error) {
-        console.error("Failed to load workouts:", error);
-        return [];
-      }
+  // Store errors from API requests.
+  const [error, setError] = useState<string | null>(null);
+
+  // FUNCTION: Retrieve all workouts.
+  const fetchWorkouts = useCallback(async () => {
+    try {
+      setError(null);
+
+      const data = await apiRequest<Workout[]>("/workouts/");
+
+      setWorkouts(data);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to load workouts.";
+
+      setError(message);
+      console.error("Failed to fetch workouts:", error);
+    } finally {
+      setIsLoading(false);
     }
+  }, []);
 
-    return [];
-  });
-
-  // EFFECT: Save workouts whenever the workouts state changes.
+  // EFFECT: Load workouts when the application starts.
   useEffect(() => {
-    localStorage.setItem("workouts", JSON.stringify(workouts));
-  }, [workouts]);
+    void fetchWorkouts();
+  }, [fetchWorkouts]);
 
   // FUNCTION: Create a new workout.
-  async function createWorkout(name: string, category: string) {
-    // Simulate waiting for a server to save the workout.
-    await new Promise((resolve) => {
-      setTimeout(resolve, 2000);
-    });
+  const createWorkout = useCallback(
+    async (name: string, category: string): Promise<number> => {
+      const newWorkout = await apiRequest<Workout>("/workouts/", {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          category,
+          status: "planned",
+        }),
+      });
 
-    // Check whether a workout with the same name already exists.
-    const duplicate = workouts.some(
-      (workout) => workout.name.toLowerCase() === name.toLowerCase(),
-    );
+      setWorkouts((current) => [...current, newWorkout]);
 
-    if (duplicate) {
-      throw new Error("A workout with this name already exists.");
-    }
-
-    const newWorkout: Workout = {
-      id: Date.now(),
-      name,
-      status: "planned",
-      category,
-      exercises: [],
-    };
-
-    // Add the new workout without deleting existing workouts.
-    setWorkouts((currentWorkouts) => [...currentWorkouts, newWorkout]);
-
-    return newWorkout.id;
-  }
+      return newWorkout.id;
+    },
+    [],
+  );
 
   // FUNCTION: Add an exercise to a specific workout.
-  function addExercise(
-    workoutId: number,
-    exerciseData: Omit<Exercise, "id" | "completed">,
-  ) {
-    // Check whether the exercise already exists in this workout.
-    const duplicate = workouts.some(
-      (workout) =>
-        workout.id === workoutId &&
-        workout.exercises.some(
-          (exercise) =>
-            exercise.name.toLowerCase() ===
-            exerciseData.name.trim().toLowerCase(),
+  const addExercise = useCallback(
+    async (
+      workoutId: number,
+      exerciseData: Omit<Exercise, "id" | "completed">,
+    ): Promise<void> => {
+      const newExercise = await apiRequest<Exercise>(
+        `/workouts/${workoutId}/exercises/`,
+        {
+          method: "POST",
+          body: JSON.stringify(exerciseData),
+        },
+      );
+
+      setWorkouts((current) =>
+        current.map((workout) =>
+          workout.id === workoutId
+            ? {
+                ...workout,
+                exercises: [...workout.exercises, newExercise],
+              }
+            : workout,
         ),
-    );
-
-    if (duplicate) {
-      throw new Error("This exercise already exists in this workout.");
-    }
-
-    const newExercise = {
-      id: Date.now() + Math.random(),
-      ...exerciseData,
-      completed: false,
-    };
-
-    setWorkouts((currentWorkouts) =>
-      currentWorkouts.map((workout) =>
-        workout.id === workoutId
-          ? {
-              ...workout,
-              exercises: [...workout.exercises, newExercise],
-            }
-          : workout,
-      ),
-    );
-  }
+      );
+    },
+    [],
+  );
 
   // FUNCTION: Update selected properties of an exercise.
-  function updateExercise(
-    workoutId: number,
-    exerciseId: number,
-    updates: ExerciseUpdate,
-  ) {
-    setWorkouts((currentWorkouts) =>
-      currentWorkouts.map((workout) =>
-        workout.id === workoutId
-          ? {
-              ...workout,
-              exercises: workout.exercises.map((exercise) =>
-                exercise.id === exerciseId
-                  ? { ...exercise, ...updates }
-                  : exercise,
-              ),
-            }
-          : workout,
-      ),
-    );
-  }
+  const updateExercise = useCallback(
+    async (
+      workoutId: number,
+      exerciseId: number,
+      updates: ExerciseUpdate,
+    ): Promise<void> => {
+      const updatedExercise = await apiRequest<Exercise>(
+        `/workouts/${workoutId}/exercises/${exerciseId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(updates),
+        },
+      );
+
+      setWorkouts((current) =>
+        current.map((workout) =>
+          workout.id === workoutId
+            ? {
+                ...workout,
+                exercises: workout.exercises.map((exercise) =>
+                  exercise.id === exerciseId ? updatedExercise : exercise,
+                ),
+              }
+            : workout,
+        ),
+      );
+    },
+    [],
+  );
 
   // FUNCTION: Delete an exercise from a workout.
-  function deleteExercise(workoutId: number, exerciseId: number) {
-    setWorkouts((currentWorkouts) =>
-      currentWorkouts.map((workout) =>
-        workout.id === workoutId
-          ? {
-              ...workout,
-              exercises: workout.exercises.filter(
-                (exercise) => exercise.id !== exerciseId,
-              ),
-            }
-          : workout,
-      ),
-    );
-  }
+  const deleteExercise = useCallback(
+    async (workoutId: number, exerciseId: number): Promise<void> => {
+      await apiRequest(`/workouts/${workoutId}/exercises/${exerciseId}`, {
+        method: "DELETE",
+      });
+
+      setWorkouts((current) =>
+        current.map((workout) =>
+          workout.id === workoutId
+            ? {
+                ...workout,
+                exercises: workout.exercises.filter(
+                  (exercise) => exercise.id !== exerciseId,
+                ),
+              }
+            : workout,
+        ),
+      );
+    },
+    [],
+  );
 
   // FUNCTION: Change the name of an existing workout.
-  function updateWorkout(workoutId: number, newName: string) {
-    const cleanedName = newName.trim();
+  const updateWorkout = useCallback(
+    async (workoutId: number, newName: string): Promise<void> => {
+      const updatedWorkout = await apiRequest<Workout>(
+        `/workouts/${workoutId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            name: newName.trim(),
+          }),
+        },
+      );
 
-    // Check whether another workout already uses this name.
-    const duplicate = workouts.some(
-      (workout) =>
-        workout.id !== workoutId &&
-        workout.name.toLowerCase() === cleanedName.toLowerCase(),
-    );
-
-    if (duplicate) {
-      throw new Error("A workout with this name already exists.");
-    }
-
-    setWorkouts((currentWorkouts) =>
-      currentWorkouts.map((workout) =>
-        workout.id === workoutId ? { ...workout, name: cleanedName } : workout,
-      ),
-    );
-  }
+      setWorkouts((current) =>
+        current.map((workout) =>
+          workout.id === workoutId ? updatedWorkout : workout,
+        ),
+      );
+    },
+    [],
+  );
 
   // FUNCTION: Change the status of an existing workout.
-  function updateWorkoutStatus(workoutId: number, status: WorkoutStatus) {
-    setWorkouts((currentWorkouts) =>
-      currentWorkouts.map((workout) =>
-        workout.id === workoutId ? { ...workout, status } : workout,
-      ),
-    );
-  }
+  const updateWorkoutStatus = useCallback(
+    async (workoutId: number, status: WorkoutStatus): Promise<void> => {
+      const updatedWorkout = await apiRequest<Workout>(
+        `/workouts/${workoutId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ status }),
+        },
+      );
+
+      setWorkouts((current) =>
+        current.map((workout) =>
+          workout.id === workoutId ? updatedWorkout : workout,
+        ),
+      );
+    },
+    [],
+  );
 
   // FUNCTION: Delete a workout.
-  function deleteWorkout(workoutId: number) {
-    setWorkouts((currentWorkouts) =>
-      currentWorkouts.filter((workout) => workout.id !== workoutId),
-    );
-  }
+  const deleteWorkout = useCallback(
+    async (workoutId: number): Promise<void> => {
+      await apiRequest(`/workouts/${workoutId}`, {
+        method: "DELETE",
+      });
 
-  // Return the data and functions so other components can use them.
+      setWorkouts((current) =>
+        current.filter((workout) => workout.id !== workoutId),
+      );
+    },
+    [],
+  );
+
+  // Return workout data and operations.
   return {
     workouts,
+    isLoading,
+    error,
+    fetchWorkouts,
     createWorkout,
     addExercise,
     updateExercise,

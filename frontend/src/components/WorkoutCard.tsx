@@ -1,6 +1,3 @@
-// LESSON: COMPONENT COMPOSITION
-// A WorkoutCard combines smaller reusable components.
-
 import { memo, useEffect, useRef, useState, type FormEvent } from "react";
 
 import type { Workout, Exercise, WorkoutStatus } from "../types/workout";
@@ -8,37 +5,33 @@ import type { Workout, Exercise, WorkoutStatus } from "../types/workout";
 import ExerciseForm from "./ExerciseForm";
 import ExerciseList from "./ExerciseList";
 
-// Define the information this component receives.
 type WorkoutCardProps = {
   workout: Workout;
 
-  // Add an exercise.
   onAddExercise: (
     workoutId: number,
     name: string,
     sets: number,
     reps: number,
     notes: string,
-  ) => void;
+  ) => Promise<void>;
 
-  // Update an existing exercise.
   onUpdateExercise: (
     workoutId: number,
     exerciseId: number,
     updates: Partial<Exercise>,
-  ) => void;
+  ) => Promise<void>;
 
-  // Update the workout name.
-  onUpdateWorkout: (workoutId: number, name: string) => void;
+  onUpdateWorkout: (workoutId: number, name: string) => Promise<void>;
 
-  // Delete a workout.
-  onDeleteWorkout: (workoutId: number) => void;
+  onDeleteWorkout: (workoutId: number) => Promise<void>;
 
-  // Delete an exercise.
-  onDeleteExercise: (workoutId: number, exerciseId: number) => void;
+  onDeleteExercise: (workoutId: number, exerciseId: number) => Promise<void>;
 
-  // Update the workout status.
-  onUpdateWorkoutStatus: (workoutId: number, status: WorkoutStatus) => void;
+  onUpdateWorkoutStatus: (
+    workoutId: number,
+    status: WorkoutStatus,
+  ) => Promise<void>;
 };
 
 function WorkoutCard({
@@ -50,25 +43,16 @@ function WorkoutCard({
   onUpdateWorkoutStatus,
   onDeleteWorkout,
 }: WorkoutCardProps) {
-  // Controls whether the exercise form is visible.
   const [showExerciseForm, setShowExerciseForm] = useState(false);
-
-  // Controls whether the edit form is visible.
   const [isEditing, setIsEditing] = useState(false);
-
-  // Controls whether the workout options menu is visible.
   const [showWorkoutMenu, setShowWorkoutMenu] = useState(false);
 
-  // Reference the workout header actions container.
   const workoutMenuRef = useRef<HTMLDivElement>(null);
 
-  // Stores the edited workout name.
   const [editName, setEditName] = useState(workout.name);
-
-  // Stores errors when editing a workout.
   const [editError, setEditError] = useState("");
+  const [isSavingWorkout, setIsSavingWorkout] = useState(false);
 
-  // Close the dropdown when clicking outside the menu.
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -86,37 +70,33 @@ function WorkoutCard({
     };
   }, []);
 
-  // Choose a CSS class based on the workout status.
   const statusClass = `status-${workout.status}`;
 
-  // Count exercises that have been completed.
   const completedExercises = workout.exercises.filter(
     (exercise) => exercise.completed,
   ).length;
 
-  // Calculate the percentage of completed exercises.
   const completionPercentage =
     workout.exercises.length === 0
       ? 0
       : Math.round((completedExercises / workout.exercises.length) * 100);
 
-  // Count exercises that are still incomplete.
   const remainingExercises = workout.exercises.length - completedExercises;
 
-  // Determine whether all exercises are completed.
   const allExercisesCompleted =
     workout.exercises.length > 0 && remainingExercises === 0;
 
-  // Save the updated workout name.
-  function handleEdit(event: FormEvent<HTMLFormElement>) {
+  async function handleEdit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const cleanedName = editName.trim();
 
     if (!cleanedName) return;
 
+    setIsSavingWorkout(true);
+
     try {
-      onUpdateWorkout(workout.id, cleanedName);
+      await onUpdateWorkout(workout.id, cleanedName);
 
       setEditError("");
       setIsEditing(false);
@@ -126,27 +106,30 @@ function WorkoutCard({
           ? error.message
           : "Something went wrong. Please try again.",
       );
+    } finally {
+      setIsSavingWorkout(false);
     }
   }
 
-  // Ask for confirmation before deleting.
   function handleDelete() {
     const confirmed = window.confirm(
       `Are you sure you want to delete "${workout.name}"?`,
     );
 
     if (confirmed) {
-      onDeleteWorkout(workout.id);
+      void onDeleteWorkout(workout.id).catch((error) => {
+        window.alert(
+          error instanceof Error ? error.message : "Failed to delete workout.",
+        );
+      });
     }
   }
 
   return (
     <article className="workout-card workout-board-column">
-      {/* WORKOUT HEADER */}
       <div className="workout-card-header">
         <div className="workout-title-section">
           <h3>{workout.name}</h3>
-
           <p className="workout-category">{workout.category}</p>
         </div>
 
@@ -158,7 +141,6 @@ function WorkoutCard({
                 workout.status.slice(1)}
           </span>
 
-          {/* THREE-DOT MENU BUTTON */}
           <button
             type="button"
             className="workout-menu-button"
@@ -170,7 +152,6 @@ function WorkoutCard({
             ⋮
           </button>
 
-          {/* WORKOUT DROPDOWN MENU */}
           {showWorkoutMenu && (
             <div className="workout-dropdown-menu">
               <button
@@ -200,18 +181,23 @@ function WorkoutCard({
         </div>
       </div>
 
-      {/* WORKOUT CONTROLS */}
       <div className="workout-controls">
         <label className="workout-status-label">
           Status:
           <select
             value={workout.status}
-            onChange={(event) =>
-              onUpdateWorkoutStatus(
+            onChange={(event) => {
+              void onUpdateWorkoutStatus(
                 workout.id,
                 event.target.value as WorkoutStatus,
-              )
-            }
+              ).catch((error) => {
+                window.alert(
+                  error instanceof Error
+                    ? error.message
+                    : "Failed to update workout status.",
+                );
+              });
+            }}
           >
             <option value="planned">Planned</option>
             <option value="in-progress">In Progress</option>
@@ -219,14 +205,13 @@ function WorkoutCard({
           </select>
         </label>
 
-        {/* EDIT WORKOUT FORM */}
         {isEditing ? (
           <form className="workout-edit-form" onSubmit={handleEdit}>
             {editError && <p className="form-error">{editError}</p>}
 
             <input
               type="text"
-              maxLength={50}
+              maxLength={100}
               value={editName}
               onChange={(event) => {
                 setEditName(event.target.value);
@@ -239,8 +224,12 @@ function WorkoutCard({
             />
 
             <div className="workout-actions">
-              <button type="submit" className="success-button">
-                Save Changes
+              <button
+                type="submit"
+                className="success-button"
+                disabled={isSavingWorkout}
+              >
+                {isSavingWorkout ? "Saving..." : "Save Changes"}
               </button>
 
               <button
@@ -261,11 +250,9 @@ function WorkoutCard({
 
       <hr />
 
-      {/* WORKOUT PROGRESS */}
       <div className="workout-progress-section">
         <div className="workout-progress-heading">
           <h4>Workout Progress</h4>
-
           <span className="workout-progress-percentage">
             {completionPercentage}%
           </span>
@@ -296,7 +283,6 @@ function WorkoutCard({
 
       <hr />
 
-      {/* ADD EXERCISE */}
       <div className="add-exercise-section">
         <button
           type="button"
@@ -307,15 +293,14 @@ function WorkoutCard({
 
         {showExerciseForm && (
           <ExerciseForm
-            onAddExercise={(name, sets, reps, notes) => {
-              onAddExercise(workout.id, name, sets, reps, notes);
+            onAddExercise={async (name, sets, reps, notes) => {
+              await onAddExercise(workout.id, name, sets, reps, notes);
               setShowExerciseForm(false);
             }}
           />
         )}
       </div>
 
-      {/* DISPLAY EXERCISES */}
       <ExerciseList
         exercises={workout.exercises}
         onUpdateExercise={(exerciseId, updates) =>

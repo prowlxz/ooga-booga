@@ -1,1 +1,23 @@
 .env
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+venv/
+ENV/
+
+# SQLite databases
+*.db
+*.sqlite3
+
+# Node.js
+node_modules/
+dist/
+
+# Environment files
+.env.*
+!.env.example

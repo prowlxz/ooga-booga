@@ -85,16 +85,17 @@ function App() {
     });
   }, [filteredWorkouts, sortBy]);
 
+
   // Remember this function until addExercise changes.
   const handleAddExercise = useCallback(
-    (
+    async (
       workoutId: number,
       name: string,
       sets: number,
       reps: number,
       notes: string,
-    ) => {
-      addExercise(workoutId, {
+    ): Promise<void> => {
+      await addExercise(workoutId, {
         name,
         sets,
         reps,
@@ -103,6 +104,7 @@ function App() {
     },
     [addExercise],
   );
+
 
   // Remember this function until createWorkout changes.
   const handleCreateWorkout = useCallback(

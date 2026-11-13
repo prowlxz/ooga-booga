@@ -1,33 +1,32 @@
-// LESSON: COMPONENT PROPS AND FORM HANDLING
-
 import { useState, type FormEvent } from "react";
 
-// Describes the information needed to add an exercise.
 type AddExerciseHandler = (
   name: string,
   sets: number,
   reps: number,
   notes: string,
-) => void;
+) => Promise<void>;
 
-// Describes the props accepted by ExerciseForm.
 type ExerciseFormProps = {
   onAddExercise: AddExerciseHandler;
 };
 
 function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
-  // Store the exercise information.
   const [exerciseName, setExerciseName] = useState("");
   const [sets, setSets] = useState(3);
   const [reps, setReps] = useState(12);
   const [notes, setNotes] = useState("");
 
-  // Store validation error messages.
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   function validateExercise(cleanedName: string): string {
     if (!cleanedName) {
       return "Please enter an exercise name.";
+    }
+
+    if (cleanedName.length > 100) {
+      return "Exercise names cannot exceed 100 characters.";
     }
 
     if (!Number.isInteger(sets) || sets < 1) {
@@ -38,16 +37,17 @@ function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
       return "Repetitions must be a whole number greater than 0.";
     }
 
+    if (notes.length > 500) {
+      return "Notes cannot exceed 500 characters.";
+    }
+
     return "";
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // Remove unnecessary spaces from the exercise name.
     const cleanedName = exerciseName.trim();
-
-    // Run the validation function.
     const validationError = validateExercise(cleanedName);
 
     if (validationError) {
@@ -55,46 +55,45 @@ function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
       return;
     }
 
-    // Clear any previous validation error.
     setError("");
+    setIsSubmitting(true);
 
-    // Send exercise information to the parent component.
     try {
-      onAddExercise(cleanedName, sets, reps, notes.trim());
+      await onAddExercise(cleanedName, sets, reps, notes.trim());
+
+      setExerciseName("");
+      setSets(3);
+      setReps(12);
+      setNotes("");
     } catch (error) {
       setError(
         error instanceof Error
           ? error.message
-          : "Something went wrong. Please try again.",
+          : "Failed to save exercise. Please try again.",
       );
-      return;
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Reset the form after successful saving.
-    setExerciseName("");
-    setSets(3);
-    setReps(12);
-    setNotes("");
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      {error && <p className="form-error">{error}</p>}
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
 
       <h4>New Exercise</h4>
 
       <input
         type="text"
-        maxLength={50}
+        maxLength={100}
         placeholder="Exercise name"
         value={exerciseName}
         onChange={(event) => {
           setExerciseName(event.target.value);
-
-          // Clear the error when the user starts correcting the input.
-          if (error) {
-            setError("");
-          }
+          setError("");
         }}
         required
       />
@@ -122,12 +121,15 @@ function ExerciseForm({ onAddExercise }: ExerciseFormProps) {
       <label>Notes (Optional):</label>
 
       <textarea
+        maxLength={500}
         placeholder="Add instructions or reminders..."
         value={notes}
         onChange={(event) => setNotes(event.target.value)}
       />
 
-      <button type="submit">Save Exercise</button>
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Saving..." : "Save Exercise"}
+      </button>
     </form>
   );
 }

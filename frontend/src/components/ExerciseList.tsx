@@ -1,16 +1,15 @@
-// LESSON: RENDERING ARRAYS WITH MAP()
-// This component displays, edits, and manages exercises.
-
 import { useState } from "react";
 import type { Exercise } from "../types/workout";
 
-// Define the information this component receives.
 type ExerciseListProps = {
   exercises: Exercise[];
 
-  onUpdateExercise: (exerciseId: number, updates: Partial<Exercise>) => void;
+  onUpdateExercise: (
+    exerciseId: number,
+    updates: Partial<Exercise>,
+  ) => Promise<void>;
 
-  onDeleteExercise: (exerciseId: number) => void;
+  onDeleteExercise: (exerciseId: number) => Promise<void>;
 };
 
 function ExerciseList({
@@ -18,21 +17,18 @@ function ExerciseList({
   onUpdateExercise,
   onDeleteExercise,
 }: ExerciseListProps) {
-  // Stores the ID of the exercise currently being edited.
   const [editingExerciseId, setEditingExerciseId] = useState<number | null>(
     null,
   );
 
-  // Stores temporary exercise information.
   const [editName, setEditName] = useState("");
   const [editSets, setEditSets] = useState(1);
   const [editReps, setEditReps] = useState(1);
   const [editNotes, setEditNotes] = useState("");
 
-  // Stores validation error messages.
   const [editError, setEditError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Start editing an exercise.
   function handleEdit(exercise: Exercise) {
     setEditingExerciseId(exercise.id);
     setEditName(exercise.name);
@@ -42,18 +38,16 @@ function ExerciseList({
     setEditError("");
   }
 
-  // Save the edited exercise.
-  function handleSave(exerciseId: number) {
+  async function handleSave(exerciseId: number) {
     const trimmedName = editName.trim();
 
-    // Validate the exercise information.
     if (!trimmedName) {
       setEditError("Please enter an exercise name.");
       return;
     }
 
-    if (trimmedName.length > 50) {
-      setEditError("Exercise names cannot exceed 50 characters.");
+    if (trimmedName.length > 100) {
+      setEditError("Exercise names cannot exceed 100 characters.");
       return;
     }
 
@@ -67,7 +61,11 @@ function ExerciseList({
       return;
     }
 
-    // Prevent duplicate exercise names.
+    if (editNotes.length > 500) {
+      setEditError("Notes cannot exceed 500 characters.");
+      return;
+    }
+
     const duplicateName = exercises.some(
       (exercise) =>
         exercise.id !== exerciseId &&
@@ -79,19 +77,29 @@ function ExerciseList({
       return;
     }
 
-    // Update the exercise.
-    onUpdateExercise(exerciseId, {
-      name: trimmedName,
-      sets: editSets,
-      reps: editReps,
-      notes: editNotes.trim(),
-    });
+    setIsSaving(true);
+    setEditError("");
 
-    // Close the edit form after successful saving.
-    handleCancel();
+    try {
+      await onUpdateExercise(exerciseId, {
+        name: trimmedName,
+        sets: editSets,
+        reps: editReps,
+        notes: editNotes.trim(),
+      });
+
+      handleCancel();
+    } catch (error) {
+      setEditError(
+        error instanceof Error
+          ? error.message
+          : "Failed to update exercise. Please try again.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   }
 
-  // Cancel editing without saving changes.
   function handleCancel() {
     setEditingExerciseId(null);
     setEditName("");
@@ -101,15 +109,21 @@ function ExerciseList({
     setEditError("");
   }
 
+  function handleDelete(exerciseId: number) {
+    void onDeleteExercise(exerciseId).catch((error) => {
+      window.alert(
+        error instanceof Error ? error.message : "Failed to delete exercise.",
+      );
+    });
+  }
+
   return (
     <section className="exercise-list-section">
       <h4>Exercises</h4>
 
       {exercises.length === 0 ? (
-        // Display this when no exercises exist.
         <p>No exercises added yet.</p>
       ) : (
-        // Display every exercise using map().
         <ul className="exercise-list">
           {exercises.map((exercise) => (
             <li
@@ -119,7 +133,6 @@ function ExerciseList({
               }`}
             >
               {editingExerciseId === exercise.id ? (
-                // EDIT EXERCISE FORM
                 <div className="exercise-edit-form">
                   {editError && (
                     <p className="form-error" role="alert">
@@ -129,7 +142,7 @@ function ExerciseList({
 
                   <input
                     type="text"
-                    maxLength={50}
+                    maxLength={100}
                     placeholder="Exercise name"
                     value={editName}
                     onChange={(event) => {
@@ -167,6 +180,7 @@ function ExerciseList({
                   <label>Exercise Notes:</label>
 
                   <textarea
+                    maxLength={500}
                     value={editNotes}
                     placeholder="Add instructions or reminders..."
                     onChange={(event) => setEditNotes(event.target.value)}
@@ -176,14 +190,16 @@ function ExerciseList({
                     <button
                       type="button"
                       className="success-button"
-                      onClick={() => handleSave(exercise.id)}
+                      disabled={isSaving}
+                      onClick={() => void handleSave(exercise.id)}
                     >
-                      Save
+                      {isSaving ? "Saving..." : "Save"}
                     </button>
 
                     <button
                       type="button"
                       className="cancel-button"
+                      disabled={isSaving}
                       onClick={handleCancel}
                     >
                       Cancel
@@ -191,17 +207,22 @@ function ExerciseList({
                   </div>
                 </div>
               ) : (
-                // NORMAL EXERCISE DISPLAY
                 <>
                   <label className="exercise-checkbox-label">
                     <input
                       type="checkbox"
                       checked={exercise.completed}
-                      onChange={(event) =>
-                        onUpdateExercise(exercise.id, {
+                      onChange={(event) => {
+                        void onUpdateExercise(exercise.id, {
                           completed: event.target.checked,
-                        })
-                      }
+                        }).catch((error) => {
+                          window.alert(
+                            error instanceof Error
+                              ? error.message
+                              : "Failed to update exercise.",
+                          );
+                        });
+                      }}
                     />
 
                     <span className="exercise-name">{exercise.name}</span>
@@ -217,7 +238,6 @@ function ExerciseList({
                     </p>
                   )}
 
-                  {/* EXERCISE ACTION BUTTONS */}
                   <div className="exercise-actions">
                     <button type="button" onClick={() => handleEdit(exercise)}>
                       Edit
@@ -225,11 +245,17 @@ function ExerciseList({
 
                     <button
                       type="button"
-                      onClick={() =>
-                        onUpdateExercise(exercise.id, {
+                      onClick={() => {
+                        void onUpdateExercise(exercise.id, {
                           sets: exercise.sets + 1,
-                        })
-                      }
+                        }).catch((error) => {
+                          window.alert(
+                            error instanceof Error
+                              ? error.message
+                              : "Failed to update exercise.",
+                          );
+                        });
+                      }}
                     >
                       Add 1 Set
                     </button>
@@ -237,7 +263,7 @@ function ExerciseList({
                     <button
                       type="button"
                       className="delete-button"
-                      onClick={() => onDeleteExercise(exercise.id)}
+                      onClick={() => handleDelete(exercise.id)}
                     >
                       Delete
                     </button>
