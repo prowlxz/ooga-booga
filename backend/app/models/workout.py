@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, CheckConstraint
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
@@ -9,7 +9,19 @@ from app.database import Base
 class Workout(Base):
     __tablename__ = "workouts"
 
+    __table_args__ = (
+        CheckConstraint(
+            "length(trim(name)) > 0",
+            name="ck_workouts_name_not_blank",
+        ),
+        CheckConstraint(
+            "status IN ('planned', 'in-progress', 'completed')",
+            name="ck_workouts_status_valid",
+        ),
+    )
+
     id = Column(Integer, primary_key=True, index=True)
+
     name = Column(String(100), nullable=False)
 
     status = Column(

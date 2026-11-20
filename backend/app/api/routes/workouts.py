@@ -45,8 +45,13 @@ def create_workout(
     )
 
     db.add(new_workout)
-    db.commit()
-    db.refresh(new_workout)
+
+    try:
+        db.commit()
+        db.refresh(new_workout)
+    except Exception:
+        db.rollback()
+        raise
 
     return new_workout
 
@@ -92,8 +97,12 @@ def update_workout(
     for field, value in updates.items():
         setattr(workout, field, value)
 
-    db.commit()
-    db.refresh(workout)
+    try:
+        db.commit()
+        db.refresh(workout)
+    except Exception:
+        db.rollback()
+        raise
 
     return workout
 
@@ -114,6 +123,11 @@ def delete_workout(
         )
 
     db.delete(workout)
-    db.commit()
+
+    try:
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
 
     return {"message": "Workout deleted successfully."}
